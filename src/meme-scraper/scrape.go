@@ -17,14 +17,14 @@ type meme struct {
 	src  string
 }
 
-func mainPage(page int) error {
+func mainPage(page int) ([]meme, error) {
 	pageURL := fmt.Sprintf("%smemes/page/%d", *url, page)
 	resp, err := http.Get(pageURL)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if resp.StatusCode != 200 {
-		return fmt.Errorf("Non-200 response code received: %d", resp.StatusCode)
+		return nil, fmt.Errorf("Non-200 response code received: %d", resp.StatusCode)
 	}
 
 	buf := new(bytes.Buffer)
@@ -33,6 +33,7 @@ func mainPage(page int) error {
 	doc := soup.HTMLParse(newStr)
 
 	rows := doc.FindAll("tr")
+	toScrape = []meme{}
 	for _, r := range rows {
 		elements := r.FindAll("td")
 		for _, element := range elements {
@@ -57,22 +58,27 @@ func mainPage(page int) error {
 				}
 			}
 			fmt.Println(meme)
+			toScrape = append(toScrape, meme)
 		}
 	}
 
-	return nil
+	return toScrape, nil
 }
+
+func scrapeMemePages()
 
 func scrape() {
 	page := 1
 	for {
 		time.Sleep(time.Millisecond * time.Duration(*rate))
-		err := mainPage(page)
+		toScrape, err := mainPage(page)
 		if err != nil {
 			// KISS and retry
 			log.Printf("Could not get page %d: %v", page, err)
 			break
 		}
+
+		scrapeMemePages()
 		page++
 	}
 }
