@@ -20,7 +20,9 @@ func main() {
 
 	flag.Parse()
 
+	saveChan = make(chan meme, 100)
 	go scrape()
+	go persist()
 
 	http.HandleFunc("/", rootHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
