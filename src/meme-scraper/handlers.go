@@ -17,7 +17,9 @@ func getQueryParams(r *http.Request) (map[string][]string, error) {
 		case "name", "src":
 			continue
 		case "views", "videos", "images", "comments":
-			// TODO Check number
+			if _, err := strconv.Atoi(v); err == nil {
+				return nil, fmt.Errorf("Cannot convert %s to integer: %v", k, err)
+			}
 		case "created", "lastUpdated":
 			// TODO check time
 		default:
