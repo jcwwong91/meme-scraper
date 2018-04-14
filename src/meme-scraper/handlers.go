@@ -10,14 +10,26 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hi there, I love %s!", r.URL.Path[1:])
 }
 
-func validateQueryParams(qp map[string][]string) error {
-	// TODO
-	return nil
+func getQueryParams(r *http.Request) (map[string][]string, error) {
+	qp := r.URL.Query()
+	for k, _ := range qp {
+		switch k {
+		case "name", "src":
+			continue
+		case "views", "videos", "images", "comments":
+			// TODO Check number
+		case "created", "lastUpdated":
+			// TODO check time
+		default:
+			return nil, fmt.Errorf("Unrecongnized key: %s", k)
+		}
+	}
+	return qp, nil
 }
 
 func memeHandler(w http.ResponseWriter, r *http.Request) {
-	queryParams := r.URL.Query()
-	if err := validateQueryParams(queryParams); err != nil {
+	queryParams, err := getQueryParams(r)
+	if err != nil {
 		fmt.Fprintf(w, "Bad Parameters: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
