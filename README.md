@@ -9,3 +9,9 @@ System requirements:
 
 TLDR:
 1. make tools
+
+
+Querying:
+There is only one endpoint to query the information, a HTTP get request to the
+"/meme" endpoint.  By default, this will return all of the memes that are
+currently stored in the database

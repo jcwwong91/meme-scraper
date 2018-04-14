@@ -15,14 +15,14 @@ import (
 )
 
 type meme struct {
-	name        string
-	src         string
-	views       int
-	videos      int
-	images      int
-	comments    int
-	created     time.Time
-	lastUpdated time.Time
+	Name        string
+	Src         string
+	Views       int
+	Videos      int
+	Images      int
+	Comments    int
+	Created     time.Time
+	LastUpdated time.Time
 }
 
 func mainPage(page int) ([]meme, error) {
@@ -53,16 +53,16 @@ func mainPage(page int) ([]meme, error) {
 			meme := meme{}
 			for _, attr := range img.Pointer.Attr {
 				if attr.Key == "title" {
-					meme.name = attr.Val
+					meme.Name = attr.Val
 				}
 			}
-			if meme.name == "" {
+			if meme.Name == "" {
 				continue
 			}
 
 			for _, attr := range a.Pointer.Attr {
 				if attr.Key == "href" {
-					meme.src = attr.Val
+					meme.Src = attr.Val
 				}
 			}
 			memes = append(memes, meme)
@@ -94,21 +94,21 @@ func parseTime(node soup.Root) (time.Time, error) {
 
 func scrapeMemePages(memes []meme) error {
 	for _, v := range memes {
-		if memeExists(v.name) {
-			log.Println(v.name, "already exists in the database, skipping")
+		if memeExists(v.Name) {
+			log.Println(v.Name, "already exists in the database, skipping")
 			continue
 		}
 		time.Sleep(time.Millisecond * time.Duration(*rate))
-		pageURL := fmt.Sprintf("%s%s", *url, v.src)
+		pageURL := fmt.Sprintf("%s%s", *url, v.Src)
 		resp, err := http.Get(pageURL)
 		if err != nil {
 			// If we fail, we ignore this meme
-			log.Printf("Failed to get page information for %s: %v", v.name, err)
+			log.Printf("Failed to get page information for %s: %v", v.Name, err)
 			continue
 		}
 		if resp.StatusCode != 200 {
 			// If we fail, we ignore this meme
-			log.Printf("Bad Status %d for %s", resp.StatusCode, v.name)
+			log.Printf("Bad Status %d for %s", resp.StatusCode, v.Name)
 			continue
 		}
 
@@ -118,48 +118,48 @@ func scrapeMemePages(memes []meme) error {
 		doc := soup.HTMLParse(newStr)
 		dl := doc.Find("dl")
 		if dl.Error != nil {
-			log.Printf("Failed to find information for %s", v.name)
+			log.Printf("Failed to find information for %s", v.Name)
 			continue
 		}
 		basicInfo := dl.FindAll("dd")
 		for _, bi := range basicInfo {
 			attrs := bi.Pointer.Attr
 			if len(attrs) != 2 || attrs[0].Key != "class" || attrs[1].Key != "title" {
-				log.Printf("Basic info format incorrect for %s", v.name)
+				log.Printf("Basic info format incorrect for %s", v.Name)
 				continue
 			}
 			switch attrs[0].Val {
 			case "views":
-				v.views, err = parseBasicInfo(attrs)
+				v.Views, err = parseBasicInfo(attrs)
 			case "videos":
-				v.videos, err = parseBasicInfo(attrs)
+				v.Videos, err = parseBasicInfo(attrs)
 			case "photos":
-				v.images, err = parseBasicInfo(attrs)
+				v.Images, err = parseBasicInfo(attrs)
 			case "comments":
-				v.comments, err = parseBasicInfo(attrs)
+				v.Comments, err = parseBasicInfo(attrs)
 			default:
-				log.Printf("Unknown basic info '%s' for %s", attrs[0].Val, v.name)
+				log.Printf("Unknown basic info '%s' for %s", attrs[0].Val, v.Name)
 				continue
 			}
 			if err != nil {
-				log.Printf("Invalid value for %s (%s) for %s: %v", attrs[0].Val, attrs[1].Val, v.name, err)
+				log.Printf("Invalid value for %s (%s) for %s: %v", attrs[0].Val, attrs[1].Val, v.Name, err)
 				continue
 			}
 		}
 
 		timeInfo := doc.FindAll("abbr")
 		if len(timeInfo) < 2 {
-			log.Printf("Invalid time format detected for %s", v.name)
+			log.Printf("Invalid time format detected for %s", v.Name)
 			continue
 		}
-		v.created, err = parseTime(timeInfo[1])
+		v.Created, err = parseTime(timeInfo[1])
 		if err != nil {
-			log.Printf("Error parsing first added for %s: %v", v.name, err)
+			log.Printf("Error parsing first added for %s: %v", v.Name, err)
 			continue
 		}
-		v.lastUpdated, err = parseTime(timeInfo[0])
+		v.LastUpdated, err = parseTime(timeInfo[0])
 		if err != nil {
-			log.Printf("Error parsing last updated for %s: %v", v.name, err)
+			log.Printf("Error parsing last updated for %s: %v", v.Name, err)
 			continue
 		}
 		saveChan <- v
@@ -179,7 +179,6 @@ func scrape(start int) {
 			break
 		}
 
-		fmt.Println("Page", page, memes)
 		scrapeMemePages(memes)
 		page++
 	}

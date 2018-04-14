@@ -21,4 +21,4 @@ install::
 
 
 run::
-	$(GOPATH)/bin/meme-scraper
+	$(GOPATH)/bin/meme-scraper -scrape=true

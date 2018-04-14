@@ -19,12 +19,12 @@ var (
 
 func persist() {
 	for v := range saveChan {
-		_, err := insert.Exec(v.name, v.src, v.views, v.videos, v.images, v.comments, v.created, v.lastUpdated)
+		_, err := insert.Exec(v.Name, v.Src, v.Views, v.Videos, v.Images, v.Comments, v.Created.Unix(), v.LastUpdated.Unix())
 		if err != nil {
-			log.Printf("Failed to add %s to database: %s", v.name, err)
+			log.Printf("Failed to add %s to database: %s", v.Name, err)
 			continue
 		}
-		log.Println("Successfully added", v.name)
+		log.Println("Successfully added", v.Name)
 	}
 }
 
@@ -35,6 +35,8 @@ func memeExists(name string) bool {
 		log.Printf("Failed to check if meme exists for %s: %v", name, err)
 		return false
 	}
+	defer rows.Close()
+
 	var count int
 	for rows.Next() {
 		err = rows.Scan(&count)
@@ -63,10 +65,10 @@ func initDB(filename string) error {
 		src varchar(1024), 
 		views int, 
 		videos int, 
-		images, int, 
+		images int, 
 		comments int, 
-		created time, 
-		lastUpdated time)`)
+		created int, 
+		lastUpdated int)`)
 
 	if err != nil && err.Error() != "table memeInfo already exists" {
 		return fmt.Errorf("Failed to create table: %v", err)
