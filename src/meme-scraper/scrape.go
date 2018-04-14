@@ -21,7 +21,7 @@ type meme struct {
 	videos      int
 	images      int
 	comments    int
-	firstAdded  time.Time
+	created     time.Time
 	lastUpdated time.Time
 }
 
@@ -94,6 +94,10 @@ func parseTime(node soup.Root) (time.Time, error) {
 
 func scrapeMemePages(memes []meme) error {
 	for _, v := range memes {
+		if memeExists(v.name) {
+			log.Println(v.name, "already exists in the database, skipping")
+			continue
+		}
 		time.Sleep(time.Millisecond * time.Duration(*rate))
 		pageURL := fmt.Sprintf("%s%s", *url, v.src)
 		resp, err := http.Get(pageURL)
@@ -104,7 +108,7 @@ func scrapeMemePages(memes []meme) error {
 		}
 		if resp.StatusCode != 200 {
 			// If we fail, we ignore this meme
-			log.Printf("Bad Status for %d for %s", resp.StatusCode, v.name)
+			log.Printf("Bad Status %d for %s", resp.StatusCode, v.name)
 			continue
 		}
 
@@ -148,7 +152,7 @@ func scrapeMemePages(memes []meme) error {
 			log.Printf("Invalid time format detected for %s", v.name)
 			continue
 		}
-		v.firstAdded, err = parseTime(timeInfo[1])
+		v.created, err = parseTime(timeInfo[1])
 		if err != nil {
 			log.Printf("Error parsing first added for %s: %v", v.name, err)
 			continue
@@ -164,8 +168,8 @@ func scrapeMemePages(memes []meme) error {
 	return nil
 }
 
-func scrape() {
-	page := 1
+func scrape(start int) {
+	page := start
 	for {
 		time.Sleep(time.Millisecond * time.Duration(*rate))
 		memes, err := mainPage(page)
@@ -175,6 +179,7 @@ func scrape() {
 			break
 		}
 
+		fmt.Println("Page", page, memes)
 		scrapeMemePages(memes)
 		page++
 	}

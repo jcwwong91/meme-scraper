@@ -4,6 +4,8 @@ work, please make sure you have access to the internet
 
 System requirements:
 - Linux
+- gcc installed
+- SQLite3 installed (usually installed by default)
 
 TLDR:
 1. make tools
