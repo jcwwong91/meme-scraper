@@ -4,20 +4,22 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 )
-
-func rootHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hi there, I love %s!", r.URL.Path[1:])
-}
 
 func getQueryParams(r *http.Request) (map[string][]string, error) {
 	qp := r.URL.Query()
-	for k, _ := range qp {
-		switch k {
+	for k, v := range qp {
+		key := k
+		if strings.HasSuffix(k, "_lt") || strings.HasSuffix(k, "_gt") {
+			key = k[:len(k)-3]
+		}
+		switch key {
 		case "name", "src":
 			continue
 		case "views", "videos", "images", "comments":
-			if _, err := strconv.Atoi(v); err == nil {
+			if _, err := strconv.Atoi(v[0]); err != nil {
 				return nil, fmt.Errorf("Cannot convert %s to integer: %v", k, err)
 			}
 		case "created", "lastUpdated":

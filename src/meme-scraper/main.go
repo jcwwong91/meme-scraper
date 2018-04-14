@@ -31,7 +31,6 @@ func main() {
 	}
 	go persist()
 
-	http.HandleFunc("/", rootHandler)
 	http.HandleFunc("/meme", memeHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 

@@ -17,12 +17,12 @@ func genQuery(qp map[string][]string) string {
 			}
 			// Parser seems to always leave a single value for v
 			val := strings.Replace(v[0], "'", "''", -1)
-			if strings.HasSuffix(k, "lt") {
-				queryString += k + " < '" + val + "'"
-			} else if strings.HasSuffix(k, "gt") {
-				queryString += k + " > '" + val + "'"
+			if strings.HasSuffix(k, "_lt") {
+				queryString += k[:len(k)-3] + " < '" + val + "'"
+			} else if strings.HasSuffix(k, "_gt") {
+				queryString += k[:len(k)-3] + " > '" + val + "'"
 			} else {
-				if k == "name" {
+				if k == "name" || k == "src" {
 					queryString += k + " LIKE '%" + val + "%'"
 				} else {
 					queryString += k + " = '" + val + "'"
