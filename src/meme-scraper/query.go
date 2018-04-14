@@ -28,6 +28,7 @@ func genQuery(qp map[string][]string) string {
 					queryString += k + " = '" + val + "'"
 				}
 			}
+			first = false
 		}
 	}
 	fmt.Println(queryString)
