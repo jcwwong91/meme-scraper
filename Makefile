@@ -10,7 +10,7 @@ all:: install
 tools::
 	wget $(GO_URL)
 	tar -xzvf $(GO_TAR)
-	mkdir -p src/pkg/bin
+	mkdir -p src pkg bin
 	$(GOPATH)/go/bin/go get golang.org/x/net/html
 	$(GOPATH)/go/bin/go get github.com/anaskhan96/soup
 	$(GOPATH)/go/bin/go get github.com/mattn/go-sqlite3

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -171,7 +172,7 @@ func scrapeMemePages(memes []meme) error {
 func scrape(start int) {
 	page := start
 	for {
-		time.Sleep(time.Millisecond * time.Duration(*rate))
+		time.Sleep(time.Millisecond * (time.Duration(*rate) + time.Duration(rand.Int63n(*random))))
 		memes, err := mainPage(page)
 		if err != nil {
 			// KISS and retry

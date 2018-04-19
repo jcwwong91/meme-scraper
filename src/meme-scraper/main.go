@@ -14,7 +14,8 @@ var (
 	datafile   = flag.String("data", "data.db", "The file to store the data in")
 	scrapeBool = flag.Bool("scrape", true, "Set to scrape otherwise just serve requests")
 	url        = flag.String("url", BaseURL, "the url for know your meme")
-	rate       = flag.Uint64("rate", 1500, "Number of milliseoncds between scrapes calls") // Keep this low to prevent violation of TOS
+	rate       = flag.Uint64("rate", 30000, "Number of milliseoncds between scrapes calls") // Keep this value high to prevent violation of TOS
+	random     = flag.Int64("random", 10000, "Number of milliseconds to randomly stall to not make this look so robotic")
 	page       = flag.Int("page", 1, "The page to start scraping at")
 )
 

@@ -7,6 +7,12 @@ System requirements:
 - gcc installed
 - SQLite3 installed (usually installed by default)
 
+Demo Environment Setup
+1. Launch an ec2-instace (ami-d874e0a0)
+2. Run yum install gcc
+3. Run yum install git
+4. Run git clone git@github.com:jcwwong91/meme-scraper.git
+
 To build and run:
 1. make tools
 2. make install
