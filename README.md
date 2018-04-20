@@ -12,6 +12,8 @@ Demo Environment Setup
 2. Run yum install gcc
 3. Run yum install git
 4. Run git clone https://github.com/jcwwong91/meme-scraper.git
+5. cd meme-scraper
+6. export GOPATH=$(pwd)
 
 To build and run:
 1. make tools
